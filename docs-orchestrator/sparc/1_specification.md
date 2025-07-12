@@ -32,7 +32,7 @@ The primary audience includes:
     - An assigned set of tools (built-in, custom, or MCP-based).
     - A default or specified LLM type (e.g., Gemini-Pro, Claude-Opus, Local-Llama3).
 - **FR-AGT-1.3 (Agent Pool):** The orchestrator shall manage a pool of active agent instances, assigning tasks to available agents based on their role.
-- **FR-AGT-1.4 (Headless Operation):** The system must interface with agent "engines" (like Gemini CLI's `packages/core` or a Claude CLI) programmatically in a headless/non-interactive mode.
+- **FR-AGT-1.4 (Headless Operation):** The system must interface with agent "engines" (like a refactored Gemini CLI or the Claude Code SDK) programmatically in a headless/non-interactive mode.
 
 #### Example Agent Prompt (`CodeGenAgent` System Prompt)
 ```
@@ -47,7 +47,7 @@ You are an expert software engineer specializing in writing clean, efficient, an
 ```
 
 ### FR-LLM-1: Multi-LLM Support
-- **FR-LLM-1.1 (Abstraction Layer):** The system shall include an abstraction layer to interact with multiple LLM backends (e.g., Google Gemini, Anthropic Claude, OpenAI, OpenSource models via a compatible API).
+- **FR-LLM-1.1 (Abstraction Layer):** The system shall include an abstraction layer to interact with multiple LLM backends (e.g., Google Gemini, Anthropic Claude, OpenAI, OpenSource models via a compatible API). This will be achieved by creating a generic `ContentGenerator` interface.
 - **FR-LLM-1.2 (Model Assignment):** Allow assigning specific LLM models to agent roles or individual tasks to leverage the best model for the job (e.g., powerful models for coding, cheaper models for summarization).
 
 ### FR-COL-1: Collaboration & Workspace Management
@@ -123,12 +123,12 @@ agenticai-adlc/
 |   |   |-- tool_proxy.py       # Proxies agent requests to external tools
 |   |-- agents/
 |   |   |-- interface.py        # Abstract base class for all agent engines
-|   |   |-- gemini_core_engine.py # Adapter for Gemini CLI `packages/core`
-|   |   |-- claude_cli_engine.py  # Adapter for Claude CLI
+|   |   |-- gemini_engine.py # Adapter for a refactored, model-agnostic Gemini CLI
+|   |   |-- claude_engine.py  # Adapter for Claude Code SDK
 |   |-- llms/
-|   |   |-- abstraction.py      # Abstract base class for LLM backends
-|   |   |-- gemini_api.py       # Wrapper for Google Gemini API
-|   |   |-- claude_api.py       # Wrapper for Anthropic Claude API
+|   |   |-- content_generator.py      # Abstract base class for LLM backends
+|   |   |-- gemini_generator.py       # Wrapper for Google Gemini API
+|   |   |-- claude_generator.py       # Wrapper for Anthropic Claude API
 |   |-- api/                    # REST API for the Command Center UI
 |   |-- config/                 # Configuration files for orchestrator and agent roles
 |-- ui/                         # Frontend code for the Command Center
@@ -141,6 +141,6 @@ agenticai-adlc/
 ## 1.8 Assumptions
 1.  Programmatic APIs for all target LLMs (Gemini, Claude, etc.) are available and stable.
 2.  OpenSource LLMs can be hosted to expose an OpenAI-compatible API for easier integration.
-3.  Gemini CLI's `packages/core` can be effectively used as a headless library.
+3.  The Gemini CLI can be refactored to be model-agnostic.
 4.  MCP is a viable standard for integrating with key enterprise tools.
 5.  Human oversight is a required and integral part of the workflow, not an exception.
